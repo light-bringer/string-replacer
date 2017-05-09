@@ -5,16 +5,49 @@
 #include <vector>
 #include <list>
 #include <stdexcept>
+#include <algorithm>
+#include <functional> 
+#include <cctype>
+#include <locale>
 
 
 using namespace std;
 
-std::string delSpaces(std::string &str) 
-{
-   str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
-   return str;
+// trim from start (in place)
+static inline void ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))));
 }
 
+// trim from end (in place)
+static inline void rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+}
+
+// trim from both ends (in place)
+static inline void trim(std::string &s) {
+    ltrim(s);
+    rtrim(s);
+}
+
+// trim from start (copying)
+static inline std::string ltrimmed(std::string s) {
+    ltrim(s);
+    return s;
+}
+
+// trim from end (copying)
+static inline std::string rtrimmed(std::string s) {
+    rtrim(s);
+    return s;
+}
+
+// trim from both ends (copying)
+static inline std::string trimmed(std::string s) {
+    trim(s);
+    return s;
+}
 
 std::list<std::string> readFile(std::string fileName) {
   
@@ -70,8 +103,14 @@ void writeFile(std::string filename, std::list<std::string> myFileContent) {
 
 
 bool StringMatcher(std::string stringOne, std::string stringTwo) {
-  std::regex e (delSpaces(stringOne));
-  if (regex_match(delSpaces(stringTwo), e)) {
+  
+  cout<<stringOne<<endl;
+  cout<<trimmed(stringOne);
+  std::string regexString = "(\\s*)("+ trimmed(stringOne) + ")(\\s*)";
+  std::regex e (regexString);
+  std::cout<<"this - "<<regexString<<endl;
+  //std::regex e (stringOne);
+  if (regex_match(stringTwo, e)) {
     cout << " matches" << endl;
     return true;
   }
@@ -84,23 +123,21 @@ bool StringMatcher(std::string stringOne, std::string stringTwo) {
 }
 
 
-std::list<std::string> myFun(std::list<std::string> myList, std::list<std::string> myNewList) {
+std::list<std::string> deleteMatching(std::list<std::string> myList, std::list<std::string> myNewList) {
   
   std::list<std::string>::iterator it1,it2;
-  it1 = myList.begin();
   for(it1=myList.begin(); it1!=myList.end(); ++it1) {
-    cout<<*it1<<endl;
     for(it2=myNewList.begin(); it2!=myNewList.end(); ++it2) {
       if(StringMatcher(*it1, *it2)==true) {
         cout<<"Yeh gaya - " <<*it2<<endl;
-        it2=myNewList.erase(it2);
+        it2 = myNewList.erase(it2);
       }
     }
   }
   for(it1=myNewList.begin(); it1!=myNewList.end(); ++it1) {
     cout<<*it1<<endl;
   }
-  cout<< "Khatam";
+  cout<< "\nKhatam";
   return myNewList;
 }
 
@@ -113,8 +150,9 @@ int main() {
   try {
     referenceList = readFile(referenceFileName);
     targetList = readFile(targetFileName);
-    targetList = myFun(referenceList, targetList);
+    targetList = deleteMatching(referenceList, targetList);
     writeFile(targetFileName, targetList);
+    cout<< StringMatcher("hi", "hi     ");
   }
   catch (std::exception const& errr) {
     std::cerr << errr.what()<<endl;
