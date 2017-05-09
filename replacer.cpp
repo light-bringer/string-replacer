@@ -4,69 +4,74 @@
 #include <regex>
 #include <vector>
 #include <list>
+#include <stdexcept>
+
 
 using namespace std;
 
-
-class StringList {
-  
-  public:
-   
-    StringList(): str(1000000), numberOfStrings(0) {
-      ifstream myfile ("replacer.cpp");
-      if (myfile.is_open()) {
-        for (int i = 0; i < str.size(); i++) {
-          getline(myfile, str[i]);
-          numberOfStrings++;         
-       }
-       myfile.close();
-        
-     }
-   }
-   
-   void getter() {
-     cout<<numberOfStrings;
-  }
-  
-
-  private:
-    
-    vector<string> str;
-    int numberOfStrings;
-};
-
-
-std::list<std::string> readFile(std::string fileName) {
-  std::list<string> myFileContent; 
-  std::ifstream myFile (fileName);
-  if(!myFile) {
-    cout<<"File hi nahi hai beta";
-  }
-  for( std::string line; getline( myFile, line ); ) {
-    myFileContent.push_back(line);
-    
-  }
-  myFile.close();
-  return myFileContent;
+std::string delSpaces(std::string &str) 
+{
+   str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+   return str;
 }
 
 
-std::list<std::string> writeFile(std::string filename, std::list<string> myFileContent) {
+std::list<std::string> readFile(std::string fileName) {
+  
+  /* Function which takes a file name as a parameter and 
+   * read all its content line per line
+   *
+   * INPUT - filename , std::std::string
+   * OUTPUT - list of filecontent, std::list<std::std::string>
+   * throws File not found exception error when file is not present
+   */
+  
+  std::list<std::string> myFileContent; 
+  std::ifstream myFile (fileName);
+
+  if(!myFile) {
+    cout<<"File hi nahi hai beta";
+    throw "File does not exist!";
+  }
+  //myFile.exceptions (ifstream::failbit | ifstream::badbit );
+  try {
+    for(std::string line; std::getline( myFile, line ); ) {
+      myFileContent.push_back(line);
+      cout<<line<<endl;
+    }
+  }
+  catch(std::exception const& e) {
+    cout << "There was an error: " << e.what() << endl;
+  }
+  
+  myFile.close();
+  
+  return myFileContent;
+
+  
+}
+
+
+
+void writeFile(std::string filename, std::list<std::string> myFileContent) {
   
   std::ofstream myFile (filename);
   if(!myFile) {
     cout<<"File hi nahi hai beta";
+    throw "File not found";
   }
-  
-  for
+  for( auto iterator = myFileContent.begin() ; iterator != myFileContent.end() ; ++iterator ) {
+    myFile << *iterator << '\n' ;
+  }
+  std::cout<< "Hey, it's done'";
   myFile.close();
-  return myFileList;
+
 }
 
 
-bool StringMatcher(string stringOne, string stringTwo) {
-  regex e (stringOne);
-  if (regex_match(stringTwo, e)) {
+bool StringMatcher(std::string stringOne, std::string stringTwo) {
+  std::regex e (delSpaces(stringOne));
+  if (regex_match(delSpaces(stringTwo), e)) {
     cout << " matches" << endl;
     return true;
   }
@@ -79,9 +84,9 @@ bool StringMatcher(string stringOne, string stringTwo) {
 }
 
 
-std::list<string> myFun(std::list<string> myList, std::list<string> myNewList) {
+std::list<std::string> myFun(std::list<std::string> myList, std::list<std::string> myNewList) {
   
-  std::list<string>::iterator it1,it2;
+  std::list<std::string>::iterator it1,it2;
   it1 = myList.begin();
   for(it1=myList.begin(); it1!=myList.end(); ++it1) {
     cout<<*it1<<endl;
@@ -101,17 +106,27 @@ std::list<string> myFun(std::list<string> myList, std::list<string> myNewList) {
 
 
 int main() {
-  string hi ("hi");
-  string hii ("hi");
-  StringList a;
-  std::list<string> myList = {"abc", "b", "c"};
-  std::list<string> myList1 = {"abcd", "abd", "abc "};
-  myFun(myList, myList1);
-  readfile("replacer.cpp");
+  
+  std::list<std::string> referenceList, targetList;
+  std::string targetFileName = "files/patchinfo", referenceFileName = "files/reference";
+  
+  try {
+    referenceList = readFile(referenceFileName);
+    targetList = readFile(targetFileName);
+    targetList = myFun(referenceList, targetList);
+    writeFile(targetFileName, targetList);
+  }
+  catch (std::exception const& errr) {
+    std::cerr << errr.what()<<endl;
+    
+  }
+  catch(const char *e) {
+    std::cerr << e;
+    
+  }
+
   
 }
 
-
-//function
 
 
