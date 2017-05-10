@@ -147,10 +147,6 @@ int main(int argc, char* argv[]) {
   else { // if we got enough parameters...
     std::string refFile, patchPath;
     std::cout << argv[0] << endl;
-    std::cout << argv[1] << endl;
-    std::cout << argv[2] << endl;
-    std::cout << argv[3] << endl;
-    std::cout << argv[4] << endl;
     for (int i = 1; i < argc; i++) {
       if (i + 1 != argc) {// Check that we haven't finished parsing already
         if (std::string(argv[i]) == "-r") {
