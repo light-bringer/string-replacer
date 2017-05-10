@@ -63,20 +63,18 @@ std::list<std::string> readFile(std::string fileName) {
   std::ifstream myFile (fileName);
 
   if(!myFile) {
-    cout<<"File hi nahi hai beta";
     throw "File does not exist!";
   }
   //myFile.exceptions (ifstream::failbit | ifstream::badbit );
   try {
     for(std::string line; std::getline( myFile, line ); ) {
       myFileContent.push_back(line);
-      cout<<line<<endl;
     }
   }
   catch(std::exception const& e) {
     cout << "There was an error: " << e.what() << endl;
   }
-  
+
   myFile.close();
   
   return myFileContent;
@@ -87,38 +85,40 @@ std::list<std::string> readFile(std::string fileName) {
 
 
 void writeFile(std::string filename, std::list<std::string> myFileContent) {
+    
+    /* Function which takes a file name and FileContent as string list a parameter and 
+   * writes all its content element per element
+   *
+   * INPUT - filename , std::std::string
+   * OUTPUT - list of filecontent, std::list<std::std::string>
+   * throws File not found exception error when file is not present
+   */
   
   std::ofstream myFile (filename);
   if(!myFile) {
-    cout<<"File hi nahi hai beta";
     throw "File not found";
   }
   for( auto iterator = myFileContent.begin() ; iterator != myFileContent.end() ; ++iterator ) {
     myFile << *iterator << '\n' ;
   }
-  std::cout<< "Hey, it's done'";
   myFile.close();
 
 }
 
 
 bool StringMatcher(std::string stringOne, std::string stringTwo) {
+    
+    /* Matches two strings by trimming the forward and trailing spaces
+     * and returns true if matched else returns false
+     */
   
-  cout<<stringOne<<endl;
-  cout<<trimmed(stringOne);
   std::string regexString = "(\\s*)("+ trimmed(stringOne) + ")(\\s*)";
   std::regex e (regexString);
-  std::cout<<"this - "<<regexString<<endl;
   //std::regex e (stringOne);
   if (regex_match(stringTwo, e)) {
-    cout << " matches" << endl;
     return true;
-  }
-  
-  else {
-    cout << " doesn’t match" << endl;
+  else 
     return false;
- }
         
 }
 
@@ -134,10 +134,6 @@ std::list<std::string> deleteMatching(std::list<std::string> myList, std::list<s
       }
     }
   }
-  for(it1=myNewList.begin(); it1!=myNewList.end(); ++it1) {
-    cout<<*it1<<endl;
-  }
-  cout<< "\nKhatam";
   return myNewList;
 }
 
@@ -152,7 +148,6 @@ int main() {
     targetList = readFile(targetFileName);
     targetList = deleteMatching(referenceList, targetList);
     writeFile(targetFileName, targetList);
-    cout<< StringMatcher("hi", "hi     ");
   }
   catch (std::exception const& errr) {
     std::cerr << errr.what()<<endl;
