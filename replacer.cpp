@@ -115,7 +115,7 @@ bool StringMatcher(std::string stringOne, std::string stringTwo) {
   std::string regexString = "(\\s*)("+ trimmed(stringOne) + ")(\\s*)";
   std::regex e (regexString);
   //std::regex e (stringOne);
-  if (regex_match(stringTwo, e)) {
+  if (regex_match(stringTwo, e))
     return true;
   else 
     return false;
@@ -138,26 +138,58 @@ std::list<std::string> deleteMatching(std::list<std::string> myList, std::list<s
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
+  if (argc < 5) { // Check the value of argc. If not enough parameters have been passed, inform user and exit.
+    std::cout << "Usage is -ref <referencefile> -patch <patchinfofile>\n"; // Inform the user of how to use the program
+    std::cin.get();
+    exit(0);
+  }
+  else { // if we got enough parameters...
+    std::string refFile, patchPath;
+    std::cout << argv[0] << endl;
+    std::cout << argv[1] << endl;
+    std::cout << argv[2] << endl;
+    std::cout << argv[3] << endl;
+    std::cout << argv[4] << endl;
+    for (int i = 1; i < argc; i++) {
+      if (i + 1 != argc) {// Check that we haven't finished parsing already
+        if (std::string(argv[i]) == "-r") {
+          refFile = argv[i + 1];
+          ++i;
+        }
+        else if (std::string(argv[i]) == "-p") {
+          patchPath = argv[i + 1];
+          ++i;
+        }
+        else {
+          std::cout << "Not enough or invalid arguments, please try again.\n"; 
+          exit(0);
+        }
+        cout<<argv[i];
+      }
+    }
   
-  std::list<std::string> referenceList, targetList;
-  std::string targetFileName = "files/patchinfo", referenceFileName = "files/reference";
-  
-  try {
-    referenceList = readFile(referenceFileName);
-    targetList = readFile(targetFileName);
-    targetList = deleteMatching(referenceList, targetList);
-    writeFile(targetFileName, targetList);
-  }
-  catch (std::exception const& errr) {
-    std::cerr << errr.what()<<endl;
+    std::list<std::string> referenceList, targetList;
+    std::string targetFileName = patchPath, referenceFileName = refFile;
     
-  }
-  catch(const char *e) {
-    std::cerr << e;
+    try {
+        referenceList = readFile(referenceFileName);
+        targetList = readFile(targetFileName);
+        targetList = deleteMatching(referenceList, targetList);
+        writeFile(targetFileName, targetList);
+    }
+    catch (std::exception const& errr) {
+        std::cerr << errr.what()<<endl;
+        
+    }
+    catch(const char *e) {
+        std::cerr << e;
+        
+    }
     
-  }
+    return 0;
 
+  }
   
 }
 
