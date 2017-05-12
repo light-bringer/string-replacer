@@ -11,3 +11,6 @@ g++ --std=c++11 replacer.cpp -o stringreplacer
 `
 ./stringreplacer -r <reffilename> -t <targetfilename>
 `
+
+
+Update  - use the Makefile, just run `make build` and the binaries will get generated
